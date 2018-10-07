@@ -5,43 +5,88 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">  
 	<link rel="stylesheet" type="text/css" href="css.css">
-	<script type="text/javascript" src="materials.js" defer></script>
-	<script type="text/javascript" src="mines.js" defer></script>
-	<script type="text/javascript" src="dtc.js" defer></script>
-
 </head>
 <body>
 	<div class="grid">
-
 		<h1>Deep Town Calc</h1>
 		<div id="info">
-			<p>DTC will help you make stuff faster!  You enter what you want to make, how much you want, and how many mines you have.  It will tell you where to place your mines, as well as how many of each material (and, if applicable, how long) it will require.</p>
+			<p>DTC will help you make stuff faster! You enter what you want to make, how much you want, and how many mines you have.  It will tell you where to place your mines, as well as how many of each material (and, if applicable, how long) it will require.</p>
 			<p>In the "Everything You Need" list, the number in [brackets] represents the number of assigned stations of that type.  You can add smelting, crafting, etc. stations by clicking the plus sign (+).  To help indicate bottlenecks, the longest time in the list will appear in <span class="bottleneck">red</span>.</p>
 			<p>In the last column, enter your current inventory of the materials you need.</p>
 			<p>To keep things clear, coal smelted from trees is called "charcoal."</p>
-			<p>If you're morbidly curious about how this site works, <a href="https://www.github.com/bdmayhem/DeepTownCalc">check out the repo</a>.</p>
+			<p>* Approximate time measured with open game. The time will be longer if the game is closed.</p>
+			<p>If you're morbidly curious about how this site works, <a href="https://www.github.com/CAVAh/DeepTownCalc" target="_blank">check out the repo</a>.</p>
 		</div>
 
 		<form id="form">
 			<div class="item-needs">
-				<li class="item"><label>Item </label><select class="what" placeholder="What do you want to build?" name="stuff" oninput="submitButton()"></select></li>
-				<li class="quantity"><label>Quantity </label><input type="number" min="0" class="how-many" value="100" oninput="submitButton()"></li>
+				<li class="item">
+					<label>Item </label>
+					<select class="what" title="What do you want to build?" name="stuff" oninput="submitButton()"></select>
+				</li>
+				<li class="quantity">
+					<label for="how-many">Quantity </label>
+					<input type="number" id="how-many" class="how-many" min="0" value="100" oninput="submitButton()">
+				</li>
 			</div>
-			<li><button class="more" type="button">Make More Stuff</button></li>
-			<li><label>Mines </label><input type="number" min="0" id="mines" value="20" oninput="submitButton()"></li>
-			<li><label>Max area </label><input type="number" min="0" id="area" value="96" oninput="submitButton()"></li>
-			<li id="coal-source"><div id="mining">Mining</div><div id="source">Coal Source</div><div id="trees">Trees</div></li>
-			<li id="coal-slider"> 
+			<li>
+				<button class="more" type="button">Make More Stuff</button>
+			</li>
+			<li>
+				<label for="mines">Mines </label>
+				<input type="number" id="mines" min="0" max="96" value="20">
+			</li>
+			<li>
+				<label for="area">Max area </label>
+				<input type="number" id="area" min="0" max="96" value="96">
+			</li>
+			<li id="coal-source">
+				<div id="mining">Mining</div>
+				<div id="source">Coal Source</div>
+				<div id="trees">Trees</div>
+			</li>
+			<li id="coal-slider">
+				<label for="slider"></label>
 				<span id="coal">100</span>
 				<input id="slider" type="range" min="0" max="100" value="0" oninput="showValue(this.value)" />
 				<span id="charcoal">0</span>
 			</li>
-			
+			<li>
+				<button type="button" id="clear-data">Clear saved data</button>
+			</li>
 		</form>
 
-		<div id="mine-results">
-			<div id="result"><h3 class="center">Mine Areas</h3></div>
-			<div id="sorted-by-area" class="hidden"></div>
+		<div id="mine-results" class="center">
+			<h3>Mine Areas</h3>
+			<div id="mine-result" class="hidden">
+				<div id="mine-priority">
+					<button type="button">Sort by area</button>
+					<p>(by Priority)</p>
+					<table border="1" cellpadding="3" cellspacing="0">
+						<thead>
+							<tr>
+								<th>Area</th>
+								<th class="noselect"><span class="minus">-</span> Level <span class="plus">+</span></th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div id="mine-area">
+					<button type="button">Sort by priority</button>
+					<p>(by Area)</p>
+					<table border="1" cellpadding="3" cellspacing="0">
+						<thead>
+							<tr>
+								<th>Area</th>
+								<th class="noselect"><span class="minus">-</span> Level <span class="plus">+</span></th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<p id="p-mine">No materials to mine</p>
+			</div>
 		</div>
 		<div id="needs"><h3 class="center">Everything You Need</h3></div>
 		<div id="inventory">
@@ -54,7 +99,12 @@
 	</div>
 	
 	<footer class="center">
-		<a href="https://bdmayhem.github.io/" class="footer">Made by BD</a>
+		<a href="https://cavah.github.io/" target="_blank">Made with love by CAVA</a> and <a href="https://bdmayhem.github.io/" target="_blank">BD</a>
 	</footer>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="materials.js" defer></script>
+	<script src="mines.js" defer></script>
+	<script src="dtc.js" defer></script>
 </body>
 </html>

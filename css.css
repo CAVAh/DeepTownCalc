@@ -59,9 +59,10 @@ footer {
 nested grid stuff
 ================= */
 
- .item-needs {
+.item-needs {
 	display: grid;
 	grid-template-columns: 9fr 1fr;
+	margin-top: 2%;
 } 
 
 .item {
@@ -144,7 +145,7 @@ li {
 	flex-wrap: wrap;
 }
 
-select, button, input:not(#use-charcoal){
+select, button, input:not(#use-charcoal) {
 	padding: 5px;
 	background-color: #AD822C;
 	border: 1px solid black;
@@ -154,19 +155,25 @@ select, button, input:not(#use-charcoal){
 	box-sizing: border-box;
 }
 
+input.mine-level {
+	width: 80% !important;
+}
+
 button {
+	border-radius: 5px;
+}
+
+button.more {
 	margin: 2% auto;
-	border-radius: 10px;
-	align-self: space-around;
+}
+
+#mine-result button {
+    padding: 10px;
 }
 
 label {
 	margin-right: 3%;
 }
-
- .item-needs {
-	margin-top: 2%;
-} 
 
 .delete-button {
 	margin: 0;
@@ -198,13 +205,9 @@ footer {
 	font-size: 1rem;
 }
 
-a.footer {
+footer > a {
 	text-decoration: none;
-	color: #ccc;
-}
-
-a.footer:visited {
-	color: #ddd;
+	color: #ccc !important;
 }
 
 li#coal-slider {
@@ -237,3 +240,18 @@ li#coal-source {
 	justify-content: space-between;
 }
 
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#mine-priority button {
+	width: 60%;
+}
+
+#mine-area button {
+	width: 70%;
+}

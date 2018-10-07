@@ -3,7 +3,7 @@ let needsList = [];
 let itemArray = [];
 let invArray = [];
 let recursionCount = 0;
-const noTime = ["mining", "shop", "waterCollection", "oilPumping"];
+const noTime = ["shop", "waterCollection", "oilPumping"];
 
 //set up select options
 const select = document.getElementsByClassName("what");
@@ -38,7 +38,7 @@ materials.sort(function(a, b){
 
 for (let i = 0; i < materials.length; i++){
 	//source headings
-	if (i === 0 || i > 0 && materials[i].source != materials[i - 1].source){
+	if (i === 0 || i > 0 && materials[i].source !== materials[i - 1].source){
 		document.getElementById("needs").insertAdjacentHTML("beforeend", "<h3 class='hidden center'><span class='mat' data-source='" + materials[i].source + "' />" + materials[i].source + "</h3>");
 		document.getElementById("inventory").insertAdjacentHTML("beforeend", "<h3 class='hidden center'><span class='inv' data-source='" + materials[i].source + "' />" + materials[i].source + "</h3>");
 	}
@@ -49,10 +49,13 @@ for (let i = 0; i < materials.length; i++){
 
 	//materials list
 	let mat = "";
-	if (!noTime.includes(materials[i].source)){
-		mat = '<li class="hidden" data-source="' + materials[i].source + '"><span class="quantity"></span> ' + materials[i].name + ' <span class="time mat" data-name="' + materials[i].name + '"></span>&nbsp;&nbsp;&nbsp;<span class="plus">+</span> [<span class="number"></span>] <span class="minus">-</span></li>';
+
+	if(materials[i].source === 'mining') {
+		mat = '<li class="hidden" data-source="' + materials[i].source + '"><span class="quantity"></span> ' + materials[i].name + ' -&nbsp;<span class="time mat" data-name="' + materials[i].name + '"></span>*&nbsp;&nbsp;&nbsp;<span class="plus hidden">+ [</span><span class="number hidden"></span><span class="minus hidden">] -</span></li>';
+	} else if (!noTime.includes(materials[i].source)) {
+		mat = '<li class="hidden" data-source="' + materials[i].source + '"><span class="quantity"></span> ' + materials[i].name + ' -&nbsp;<span class="time mat" data-name="' + materials[i].name + '"></span>&nbsp;&nbsp;&nbsp;<span class="plus">+</span> [<span class="number"></span>] <span class="minus">-</span></li>';
 	} else {
-		mat = '<li class="hidden" data-source="' + materials[i].source + '"><span class="quantity"></span> ' + materials[i].name + ' <span class="time mat" data-name="' + materials[i].name + '"></span>&nbsp;&nbsp;&nbsp;<span class="plus hidden">+ [</span><span class="number hidden"></span><span class="minus hidden">] -</span></li>';
+		mat = '<li class="hidden" data-source="' + materials[i].source + '"><span class="quantity"></span> ' + materials[i].name + ' -&nbsp;<span class="time mat" data-name="' + materials[i].name + '"></span>&nbsp;&nbsp;&nbsp;<span class="plus hidden">+ [</span><span class="number hidden"></span><span class="minus hidden">] -</span></li>';
 	}
 
 	document.getElementById("needs").insertAdjacentHTML("beforeend", mat);
@@ -68,14 +71,14 @@ for (let i = 0; i < materials.length; i++){
 		num.innerHTML = 1;
 	}
 
-	minus[minus.length - 1].addEventListener("click", function(e){
+	minus[minus.length - 1].addEventListener("click", function(){
 		if (num.innerHTML > 1){
 			num.innerHTML--;
 			submitButton();
 		}
 	});
 
-	plus[plus.length - 1].addEventListener("click", function(e){
+	plus[plus.length - 1].addEventListener("click", function(){
 		num.innerHTML++;
 		submitButton();
 	});
@@ -159,7 +162,7 @@ function makeThese(stuff, quant){
 			let reduce = inventoryItem.quantity;
 			inventoryItem.quantity -= quant;
 			quant -= reduce;
-			(quant < 0) ? 0 : quant;
+			quant = (quant < 0) ? 0 : quant;
 		}
 	});
 
@@ -242,11 +245,11 @@ function findMines (maxArea, availableMines) {
 					} else {
 						let found;
 						let i;
-						searchingMinesLoop:
+
 						for (i = 0; i < sortingMines.length; i++){
 							if (sortingMines[i].area === mine.area){
 								found = true;
-								break searchingMinesLoop;
+								break;
 							}
 						}
 
@@ -269,8 +272,7 @@ function findMines (maxArea, availableMines) {
 	miningAlgorithm(availableMines, minableSum, needSum, minableNeeds);
 }
 
-function miningAlgorithm(availableMines, minableSum, needSum, minableNeeds){
-	calculateLoop:
+function miningAlgorithm(availableMines, minableSum, needSum, minableNeeds) {
 	for (let i = 0; i < availableMines; i++){
 		let weightedNeedSum = 0;
 		needsList.forEach(function(miningNeed){
@@ -327,7 +329,7 @@ function miningAlgorithm(availableMines, minableSum, needSum, minableNeeds){
 				if (needsList[j].source === "mining" && !needsList[j].hasOwnProperty("checked")){
 					needsList[j].checked = true;
 					let matchCounter = 0;
-					checkAgainstMines:
+
 					for (let k = 0; k < sortingMines.length; k++){
 						if (sortingMines[k].hasOwnProperty(needsList[j].name) && sortingMines[k].hasOwnProperty("order")){
 							break checkForOrphanNeeds;
@@ -357,7 +359,6 @@ function miningAlgorithm(availableMines, minableSum, needSum, minableNeeds){
 function chooseMine(orderIndex){
 	getHighestPriority:
 	for (let l = 0; l < needsList.length; l++){
-		getMatchingMine:
 		for (let m = 0; m < sortingMines.length; m++){
 			if (sortingMines[m].hasOwnProperty(needsList[l].name) && sortingMines[m].howMuch > 0){
 				sortingMines[m].order = orderIndex;
@@ -379,38 +380,96 @@ function chooseMine(orderIndex){
 	}
 }
 
-const resultDiv = document.getElementById("result");
-const sortedDiv = document.getElementById("sorted-by-area");
-
 function displayMines (sortedMines) {
-	let content;
-	
-	if (sortedMines.length === 0){
-		resultDiv.innerHTML = "<p class='center'>No materials to mine</p>";
-		sortedDiv.innerHTML = "<p class='center'>No materials to mine</p>";
+	$('#mine-result').removeClass('hidden');
+
+	if (sortedMines.length === 0) {
+		$('#p-mine').show();
+		$('#mine-priority').hide();
+		$('#mine-area').hide();
 	} else {
-		//click list to display mines list sorted by priority
-		sortedMines.sort(function(a, b){
+		$('#p-mine').hide();
+		$('#mine-priority').show();
+		$('#mine-area').hide();
+		let minesLevel = JSON.parse(localStorage.getItem('minesLevel'));
+
+		// Display mines list sorted by priority
+		sortedMines.sort(function (a, b) {
 			return a.order - b.order;
 		});
 
-		resultDiv.innerHTML = "<p>Click to sort mines by area</p>";
-		sortedMines.forEach(function(e){
-			content = "<li>Area&nbsp;<span class='area-priority'>" + e.area + "</span></li>";
-			resultDiv.insertAdjacentHTML("beforeend", content);
+		$('#mine-priority table tbody').empty();
+
+		$.each(sortedMines, function (i, mine) {
+			let level = 1;
+
+			if(minesLevel) {
+				level = minesLevel[parseInt(mine.area, 10)] || 1;
+			}
+
+			$('#mine-priority table tbody').append(
+				$('<tr>').append(
+					$('<td>').append(
+						$('<span>', {
+							'class': 'area-priority'
+						}).text('Area ' + mine.area)
+					),
+					$('<td>').append(
+						$('<input>', {
+							'type': 'number',
+							'class': 'mine-level',
+							'data-area': mine.area,
+							'max': 9,
+							'min': 0,
+							'value': level
+						}).on('input', function() {
+							$('#mine-area input[data-area="' + $(this).data('area') + '"]').val($(this).val());
+							displayNeeds();
+						})
+					)
+				)
+			);
 		});
 
-		//click list to display mines list sorted by area
-		sortedDiv.innerHTML = "<p>Click to sort mines by priority</p>";
-		sortedMines.sort(function(a, b){
+		// Display mines list sorted by area
+		sortedMines.sort(function (a, b) {
 			return a.area - b.area;
 		});
 
-		sortedMines.forEach(function(e){
-			content = "<li>&nbsp;<span class='area-area'>" + e.area + "</span></li>";
-			sortedDiv.insertAdjacentHTML("beforeend", content);
+		$('#mine-area table tbody').empty();
+
+		$.each(sortedMines, function (i, mine) {
+			let level = 1;
+
+			if(minesLevel) {
+				level = minesLevel[parseInt(mine.area, 10)] || 1;
+			}
+
+			$('#mine-area table tbody').append(
+				$('<tr>').append(
+					$('<td>').append(
+						$('<span>', {
+							'class': 'area-area'
+						}).text('Area ' + mine.area)
+					),
+					$('<td>').append(
+						$('<input>', {
+							'type': 'number',
+							'class': 'mine-level',
+							'data-area': mine.area,
+							'max': 9,
+							'min': 0,
+							'value': level
+						}).on('input', function() {
+							$('#mine-priority input[data-area="' + $(this).data('area') + '"]').val($(this).val());
+							displayNeeds();
+						})
+					)
+				)
+			);
 		});
 	}
+
 	displayNeeds();
 }
 
@@ -426,79 +485,153 @@ function displayNeeds(){
 	
 	const matDiv = document.getElementsByClassName("mat");
 	const invDiv = document.getElementsByClassName("inv");
+	let bottleneck = Math.max.apply(Math, needsList.map(function(e){
+		return Math.ceil(parseInt(e.batches) * parseInt(e.time) / e.stations);
+	}));
 
-	
-	for (let i = 0; i < needsList.length; i++){
-		for (let j = 0; j < matDiv.length; j++){
-			if (needsList[i].name === matDiv[j].dataset.name){
-				
-				const bottleneck = Math.max.apply(Math, needsList.map(function(e){
-					return Math.ceil(parseInt(e.batches) * parseInt(e.time) / e.stations);
-				}));
+	for (let i = 0; i < needsList.length; i++) {
+		if (needsList[i].source === 'mining') {
+			let resourcesByMin = calcTimeMining(needsList[i].name);
 
-				const qu = Math.ceil(needsList[i].quantity / needsList[i].stations).toLocaleString("en-us");
-				const st = needsList[i].name;
-				
-				matDiv[j].classList.remove("bottleneck");
-				matDiv[j].parentNode.classList.remove("hidden");
-				invDiv[j].parentNode.classList.remove("hidden");
-				matDiv[j].previousElementSibling.innerHTML = qu + "&nbsp;";
-				invDiv[j].previousElementSibling.innerHTML = st + "&nbsp;";
+			if (resourcesByMin === 0) {
+				needsList[i].timeTotal = 0;
+			} else {
+				const quant = Math.ceil(needsList[i].quantity / needsList[i].stations);
+				needsList[i].timeTotal = Math.ceil(quant / resourcesByMin * 60);
 
-				if (needsList[i].quantity > 0){
-					const time = [0,0,0,0];
-					let ti;
-					let timeStr = "";
-					
-					if(!noTime.includes(needsList[i].source)){
-						
-						ti = Math.ceil(needsList[i].time / needsList[i].stations * needsList[i].batches);
-						if (ti === bottleneck){
-							matDiv[j].classList.add("bottleneck");
-						}
-
-						if (ti < needsList[i].time) {
-							ti = needsList[i].time;
-						}
-						
-						if (ti >= 86400){
-							time[0] = Math.floor(ti/86400);
-							ti -= time[0] * 86400;
-						}
-						if (ti >= 3600){
-							time[1] = Math.floor(ti/3600);
-							ti -= time[1] * 3600;
-						}
-						if (ti >= 60){
-							time[2] = Math.floor(ti/60);
-							ti -= time[2] * 60;
-						}
-						time[3] = ti;
-						
-						time.forEach(function(value, index, time){
-							if (value === 0){
-								time[index] = "00";
-							}
-						});
-						
-						if (time[0] > 0){
-							timeStr = "&nbsp;- " + time[0] + ":" + time[1] + ":" + time[2] + ":" + time[3];
-						} else  if (time[1] > 0){
-							timeStr = "&nbsp;- " + time[1] + ":" + time[2] + ":" + time[3];
-						} else {
-							timeStr = "&nbsp;- " + time[2] + ":" + time[3];
-						}
-					}
-					matDiv[j].innerHTML = timeStr;
+				if(bottleneck < needsList[i].timeTotal) {
+					bottleneck = needsList[i].timeTotal;
 				}
-				
-			}
-			if (matDiv[j].dataset.source === needsList[i].source){
-				matDiv[j].parentNode.classList.remove("hidden");
-				invDiv[j].parentNode.classList.remove("hidden");
 			}
 		}
 	}
+
+	for (let i = 0; i < needsList.length; i++) {
+		for (let j = 0; j < matDiv.length; j++) {
+			if (needsList[i].name === matDiv[j].dataset.name) {
+				const quant = Math.ceil(needsList[i].quantity / needsList[i].stations);
+				const quantStr = quant.toLocaleString('en-us');
+
+				matDiv[j].classList.remove('bottleneck');
+				matDiv[j].parentNode.classList.remove('hidden');
+				invDiv[j].parentNode.classList.remove('hidden');
+				matDiv[j].previousElementSibling.innerHTML = quantStr + '&nbsp;';
+				invDiv[j].previousElementSibling.innerHTML = needsList[i].name + '&nbsp;';
+
+				if (needsList[i].quantity > 0) {
+					const time = [0, 0, 0, 0];
+					let ti;
+					let timeStr = '';
+
+					if (!noTime.includes(needsList[i].source)) {
+						if (needsList[i].source === 'mining') {
+							ti = needsList[i].timeTotal;
+						} else {
+							ti = Math.ceil(needsList[i].time / needsList[i].stations * needsList[i].batches);
+						}
+
+						if (ti !== 0) {
+							if (ti === bottleneck) {
+								matDiv[j].classList.add('bottleneck');
+							}
+
+							if (ti < needsList[i].time) {
+								ti = needsList[i].time;
+							}
+
+							if (ti >= 86400) {
+								time[0] = Math.floor(ti / 86400);
+								ti -= time[0] * 86400;
+							}
+
+							if (ti >= 3600) {
+								time[1] = Math.floor(ti / 3600);
+								ti -= time[1] * 3600;
+							}
+
+							if (ti >= 60) {
+								time[2] = Math.floor(ti / 60);
+								ti -= time[2] * 60;
+							}
+
+							time[3] = Math.ceil(ti);
+
+							time.forEach(function (value, index, time) {
+								if (value === 0) {
+									time[index] = '0' + '0';
+								} else if (value < 10) {
+									time[index] = '0' + value;
+								}
+							});
+
+							timeStr = '';
+
+							if (needsList[i].source === 'mining') {
+								timeStr += '~';
+							}
+
+							if (time[0] > 0) {
+								timeStr += time[0] + ':' + time[1] + ':' + time[2] + ':' + time[3];
+							} else if (time[1] > 0) {
+								timeStr += time[1] + ':' + time[2] + ':' + time[3];
+							} else {
+								timeStr += time[2] + ':' + time[3];
+							}
+						}
+					}
+
+					matDiv[j].innerHTML = timeStr;
+				}
+
+			}
+
+			if (matDiv[j].dataset.source === needsList[i].source) {
+				matDiv[j].parentNode.classList.remove('hidden');
+				invDiv[j].parentNode.classList.remove('hidden');
+			}
+		}
+	}
+}
+
+function calcTimeMining(name) {
+	let tableMine;
+	let myMinesLevel = JSON.parse(localStorage.getItem('minesLevel'));
+
+	if(!myMinesLevel) {
+		myMinesLevel = new Array(97);
+
+		for(let i = 0; i < myMinesLevel.length; i++) {
+			myMinesLevel[i] = 0;
+		}
+	}
+
+	if($('#mine-priority').is(':visible')) {
+		tableMine = $('#mine-priority table');
+	} else {
+		tableMine = $('#mine-area table');
+	}
+
+	let resourcesByMin = 0;
+
+	tableMine.find('input.mine-level').each(function(index, input) {
+		let $input = $(input);
+		let level = parseInt($input.val(), 10);
+		let area = parseInt($input.data('area'), 10);
+
+		if(level >= 1 && level <= 9 && area > 0 && area <= 96) {
+			myMinesLevel[area] = level;
+			let mine = mines[area - 1];
+
+			if(mine.hasOwnProperty(name)) {
+				let perc = parseInt(mine[name], 10) / 100;
+				resourcesByMin += mineRpm[level] * perc;
+			}
+		}
+	});
+
+	localStorage.setItem('minesLevel', JSON.stringify(myMinesLevel));
+
+	return resourcesByMin;
 }
 
 document.querySelector(".more").addEventListener("click", addForm);
@@ -529,7 +662,7 @@ function addDeleteButton(where){
 	where.appendChild(deleteButton);
 
 	//tell delete button which div to delete
-	deleteButton.addEventListener("click", function(e){
+	deleteButton.addEventListener("click", function(){
 		where.parentNode.removeChild(where);
 		//delete button from first form
 		if (document.querySelectorAll(".item-needs").length === 1){
@@ -537,13 +670,6 @@ function addDeleteButton(where){
 		}
 		submitButton();
 	});
-}
-
-document.querySelector("#mine-results").addEventListener("click", toggleMines);
-
-function toggleMines(e){
-	resultDiv.classList.toggle("hidden");
-	sortedDiv.classList.toggle("hidden");
 }
 
 function showValue(newValue) {
@@ -571,3 +697,57 @@ function hide(){
 	document.getElementById("hide").classList.add("hidden");
 	submitButton();
 }
+
+$(document).ready(function() {
+	$('#p-mine').hide();
+
+	$('#mine-priority button').click(function() {
+		$('#mine-priority').hide();
+		$('#mine-area').show();
+	});
+
+	$('#mine-area button').click(function() {
+		$('#mine-priority').show();
+		$('#mine-area').hide();
+	});
+
+	$('#mines').on('input', function () {
+		localStorage.setItem('mines', $(this).val());
+		submitButton();
+	}).val(localStorage.getItem('mines') || 20);
+
+	$('#area').on('input', function () {
+		localStorage.setItem('max-area', $(this).val());
+		submitButton();
+	}).val(localStorage.getItem('max-area') || 96);
+
+	$('#mine-result .minus').click(function () {
+		$(this).parents('div:eq(0)').find('input').each(function () {
+			let level = parseInt($(this).val(), 10);
+
+			if(level > 0) {
+				$('input[data-area="' + $(this).data('area') + '"]').val(level - 1);
+			}
+
+			displayNeeds();
+		})
+	});
+
+	$('#mine-result .plus').click(function () {
+		$(this).parents('div:eq(0)').find('input').each(function () {
+			let level = parseInt($(this).val(), 10);
+
+			if(level < 9) {
+				$('input[data-area="' + $(this).data('area') + '"]').val(level + 1);
+			}
+
+			displayNeeds();
+		})
+	});
+
+	$('#clear-data').click(function () {
+		if(confirm('Are you sure you want to delete the saved data?')) {
+			localStorage.clear();
+		}
+	});
+});
