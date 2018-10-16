@@ -4,18 +4,21 @@
 	<title>Deep Town Calc</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-	<link rel="stylesheet" type="text/css" href="css.css">
+	<link rel="stylesheet" type="text/css" href="css/css.css">
 </head>
 <body>
 	<div class="grid">
-		<h1>Deep Town Calc</h1>
+		<h1>Deep Town Calc
+			<a href="#" class="lang" data-lang="en-US"><img src="img/en-US.png" height="18"></a>
+			<a href="#" class="lang" data-lang="pt-BR"><img src="img/pt-BR.png" height="18"></a>
+		</h1>
 		<div id="info">
-			<p>DTC will help you make stuff faster! You enter what you want to make, how much you want, and how many mines you have.  It will tell you where to place your mines, as well as how many of each material (and, if applicable, how long) it will require.</p>
-			<p>In the "Everything You Need" list, the number in [brackets] represents the number of assigned stations of that type.  You can add smelting, crafting, etc. stations by clicking the plus sign (+).  To help indicate bottlenecks, the longest time in the list will appear in <span class="bottleneck">red</span>.</p>
-			<p>In the last column, enter your current inventory of the materials you need.</p>
-			<p>To keep things clear, coal smelted from trees is called "charcoal."</p>
-			<p>* Approximate time measured with open game. The time will be longer if the game is closed.</p>
-			<p>If you're morbidly curious about how this site works, <a href="https://www.github.com/CAVAh/DeepTownCalc" target="_blank">check out the repo</a>.</p>
+			<p>DTC will help you make stuff faster! You enter what you want to make, how much you want, and how many mines you have.  It will tell you where to place your mines, as well as how many of each material (and, if applicable, how long) it will require.<br><br>
+			In the "Everything You Need" list, the number in [brackets] represents the number of assigned stations of that type.  You can add smelting, crafting, etc. stations by clicking the plus sign (+).  To help indicate bottlenecks, the longest time in the list will appear in <span class="bottleneck">red</span>.<br><br>
+			In the last column, enter your current inventory of the materials you need.<br><br>
+			To keep things clear, coal smelted from trees is called "charcoal."<br><br>
+			* Approximate time measured with open game. The time will be longer if the game is closed.<br><br>
+			If you're morbidly curious about how this site works, <a href="https://www.github.com/CAVAh/DeepTownCalc" target="_blank">check out the repo</a>.</p>
 		</div>
 
 		<form id="form">
@@ -41,7 +44,7 @@
 				<input type="number" id="area" min="0" max="96" value="96">
 			</li>
 			<li id="coal-source">
-				<div id="mining">Mining</div>
+				<div id="mining_coal">Mining</div>
 				<div id="source">Coal Source</div>
 				<div id="trees">Trees</div>
 			</li>
@@ -65,8 +68,8 @@
 					<table border="1" cellpadding="3" cellspacing="0">
 						<thead>
 							<tr>
-								<th>Area</th>
-								<th class="noselect"><span class="minus">-</span> Level <span class="plus">+</span></th>
+								<th class="area">Area</th>
+								<th class="nosel"><span class="minus">-</span> <span class="lvl">Level</span> <span class="plus">+</span></th>
 							</tr>
 						</thead>
 						<tbody></tbody>
@@ -78,8 +81,8 @@
 					<table border="1" cellpadding="3" cellspacing="0">
 						<thead>
 							<tr>
-								<th>Area</th>
-								<th class="noselect"><span class="minus">-</span> Level <span class="plus">+</span></th>
+								<th class="area">Area</th>
+								<th class="nosel"><span class="minus">-</span> <span class="lvl">Level</span> <span class="plus">+</span></th>
 							</tr>
 						</thead>
 						<tbody></tbody>
@@ -99,12 +102,12 @@
 	</div>
 	
 	<footer class="center">
-		<a href="https://cavah.github.io/" target="_blank">Made with love by CAVA</a> and <a href="https://bdmayhem.github.io/" target="_blank">BD</a>
+		<a href="https://cavah.github.io/" target="_blank">Made with love by CAVA</a> <span>and</span> <a href="https://bdmayhem.github.io/" target="_blank">BD</a>
 	</footer>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-	<script src="materials.js" defer></script>
-	<script src="mines.js" defer></script>
-	<script src="dtc.js" defer></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="js/materials.js?v21" defer></script>
+	<script src="js/mines.js?v21" defer></script>
+	<script src="js/dtc.js?v21" defer></script>
 </body>
 </html>
